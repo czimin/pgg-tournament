@@ -7,7 +7,7 @@ Banking modes can be specified under the `Bank` class in `game.py` in the `publi
 - `mode=2` takes after Fehr & Gachter (2002), p.137, where each player receives a fraction of every dollar contributed to the common pool. This fraction is again specified by `bankerx` which must be less than 1
 ## Strategies
 Strategies are stored in `strategies.py` in the `publicgoodsgame` module. More strategies can and will be added.
-Strategies that calculate their next move based on other players' histories have an optional communist mode. When `iscommunist` is set to true, such a strategy will judge other players by comparing what they paid out against what they afford, rather than against what it itself had paid out. Additionally, if `game.mode` in `game.py` is set to 1, the 'average opponent' will be interpreted as the median player, rather than the mean player. 
+Strategies that calculate their next move based on other players' histories have an optional communist mode. When `iscommunist` is set to true, such a strategy will judge other players by comparing what they contributed against what they can afford, rather than against what it itself had paid out. Additionally, if `game.mode` in `game.py` is set to 1, the 'average opponent' will be interpreted as the median player, rather than the mean player. 
 
 Conceptually, both `game.mode=1` and `iscommunist` require a world with perfect information, where each player knows the detailed accounts of every other player, rather than just the sum of all contributions. Currently, one strategy, `INCENDIO`, which punishes all for the perceived selfishness of one, would theoretically only be able to play in such a world, but no restriction is made in this implementation.
 ## Output
