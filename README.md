@@ -12,3 +12,5 @@ Strategies that calculate their next move based on other players' histories have
 Conceptually, both `game.mode=1` and `iscommunist` require a world with perfect information, where each player knows the detailed accounts of every other player, rather than just the sum of all contributions. Currently, one strategy, `INCENDIO`, which punishes all for the perceived selfishness of one, would theoretically only be able to play in such a world, but no restriction is made in this implementation.
 ## Output
 Currently, only a 3D-array of payouts (rounds, groups, players) and 2D-array of payins are generated, although existing functionality in `strategies.py` can calculate final account balances for each player.
+## Warning
+If something looks wrong, it probably is. This is my first go at Python.
