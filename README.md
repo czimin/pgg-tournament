@@ -1,6 +1,9 @@
 # pgg-tournament
 An Axelrod-styled tournament among different strategies playing the public goods game. The tournament comprises all possible group combinations given a chosen group size, each group playing over a chosen number of rounds. The implementation can only run one tournament at a time.
 
+## Results
+On default settings, the champion of the tournament is `HYPOCRITE`. Perhaps surprisingly, the sucker of the tournament is `ALLD`.
+
 ## Banking modes
 Banking modes can be specified under the `Bank` class in `game.py` in the `publicgoodsgame` module. Currently, 3 modes are supported but more can be added.
 - `mode=0` multiplies the total contribution by `bankerx`, a chosen amount that must be less than the number of participants for this mode
@@ -17,8 +20,6 @@ Conceptually, both `game.mode=1` and `iscommunist` require a world with perfect 
 
 ## Output
 At any point in the tournament, a 3D-array of payouts (rounds, groups, players) and a 2D-array of payins (rounds, groups) can be accessed. Payins and payouts at the end of each round and the winner for each group are also printed. When the tournament ends, the total balances for each player and the champion is printed.
-
-On default settings, the tournament winner is `HYPOCRITE`, not `ALLD`.
 
 ## Warning
 If something looks wrong, it probably is. This is my first go at Python.
