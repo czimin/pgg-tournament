@@ -54,12 +54,20 @@ class Strategy:
         else:
             raise TypeError("Strategy is not in group")
 
+    # Returns 1D-array of all players in the current round
+    @classmethod
+    def acc_balance_all(cls):
+        _payin_1d = Game.payins[:(Current.round+1), Current.group]
+        _payout_2d = Game.payouts[:(Current.round+1), Current.group, :]
+        _all_accounts = (np.vstack(_payin_1d) - _payout_2d).sum(axis=0)
+        return _all_accounts
+
     # Returns 1D-array showing each player's account in round-2, excluding own player
     @classmethod
     def acc_balance_prev(cls):
         if cls.isingroup():
             if Current.round == 1:
-                return np.full(Game.group_size, Game.endowment)
+                return np.full(Game.group_size-1, Game.endowment)
             else:
                 # Current.round-1 because at round r, players' spending in round-1 is based on their balance at the round-2
                 _payin_1d = Game.payins[:(Current.round - 1), Current.group]
@@ -141,7 +149,7 @@ class ALLD(Strategy):
 
 class TFT(Strategy):
 
-    #TFT gives whatever the average player gave in the previous round
+    # TFT gives whatever the average player gave in the previous round. If that's more than what it has, it gives everything it has.
 
     name = "TFT"
     # As a communist, TFT will take into account the means of other players.
@@ -158,6 +166,9 @@ class TFT(Strategy):
                 return
             elif cls.iscommunist:
                 Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
+                return
+            elif cls.avg_payouts_prev() > cls.acc_balance_player():
+                Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.acc_balance_player()
                 return
             else:
                 Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev()
@@ -185,8 +196,12 @@ class PROTEGO(Strategy):
                 Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
                 return
             elif not cls.iscommunist and cls.avg_acc_balance_prev() >= cls.standard / 100 * Game.payouts[Current.round -1, Current.group, cls.playerpos()]:
-                Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev()
-                return
+                if cls.avg_payouts_prev() > cls.acc_balance_player():
+                    Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.acc_balance_player()
+                    return
+                else:
+                    Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev()
+                    return
             else:
                 Game.payouts[Current.round, Current.group, cls.playerpos()] = 0
                 return
@@ -210,8 +225,12 @@ class GRIM(Strategy):
                 Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
                 return
             elif not cls.iscommunist and cls.avg_acc_balance_prev() >= cls.standard / 100 * Game.payouts[Current.round -1, Current.group, cls.playerpos()] and not cls.defectedbefore():
-                Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev()
-                return
+                if cls.avg_payouts_prev() > cls.acc_balance_player():
+                    Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.acc_balance_player()
+                    return
+                else:
+                    Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev()
+                    return
             else:
                 Game.payouts[Current.round, Current.group, cls.playerpos()] = 0
                 return

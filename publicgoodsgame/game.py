@@ -3,6 +3,7 @@ from enum import Enum
 from itertools import combinations
 
 # Begin original code
+# Number strategies in order to avoid errors in main
 class Player(Enum):
     ALLC = 0
     ALLD = 1
