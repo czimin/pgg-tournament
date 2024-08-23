@@ -7,7 +7,7 @@ if __name__ == "__main__":
     # For debugging purposes:
     # print(game.Game.fixture)
     # print(game.Game.fixture.shape)
-    # This should be the same as above
+    # This should be the same as the fixture
     # print(game.Game.payins.shape)
     
     game.Current.group = 0
@@ -25,7 +25,7 @@ if __name__ == "__main__":
                 print(f"Player {game.Player(p).name} has made a move")
             
             game.Bank.credits()
-            print(f"Banker has credited all acounts for this round")
+            print(f"Banker has credited all accounts for this round")
             print(f"Payins for this round: {game.Game.payins[game.Current.round,game.Current.group]}")
             print(f"Payouts for this round: {game.Game.payouts[game.Current.round,game.Current.group,:]}")
             print(f"Accounts for this round: {strategies.Strategy.acc_balance_all()}")
@@ -44,16 +44,35 @@ if __name__ == "__main__":
     # For debugging purposes (should be same as above):
     # print(game.Game.fixture)
 
-    final_scores =[]
+    # Players' indices
+    final_scores_players = []
+    # Players' scores
+    _final_scores_values = []
+
     for p in game.Player:
+        final_scores_players.append(p.value)
         x,y = np.where(game.Game.fixture == p.value)
         mask = x,y
         # For debugging purposes (to check that coordinates given are correct):
         # print(mask)
         this_player_total = balance_along_rounds[mask].sum()
         print(f"Player {p.name}'s total score: {this_player_total}")
-        final_scores.append(this_player_total)
+        _final_scores_values.append(this_player_total)
 
-    champion = game.Player(np.array(final_scores).argmax()).name
-    sucker = game.Player(np.array(final_scores).argmin()).name
+    # Prevents overflow error
+    final_scores_values = np.array(_final_scores_values).astype(np.int64)
+    final_scores = np.arange(len(final_scores_players)*2).reshape(2,len(final_scores_players))
+    final_scores[0,:] = final_scores_players
+    final_scores[1,:] = final_scores_values
+
+    champion = game.Player(final_scores[0,final_scores[1,:].argmax()]).name
+    sucker = game.Player(final_scores[0,final_scores[1,:].argmin()]).name
     print(f"The champion is {champion} and the sucker is {sucker}")
+
+    stand = np.argsort(final_scores[1])[::-1]
+    ranked_stand_by_value = final_scores[0][stand]
+    ranked_stand_by_name = []
+    for v in ranked_stand_by_value:
+        ranked_stand_by_name.append(game.Player(v).name)
+
+    print(f"Ranking: {ranked_stand_by_name}")
