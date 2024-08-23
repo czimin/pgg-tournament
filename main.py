@@ -32,7 +32,8 @@ if __name__ == "__main__":
             game.Current.round = game.Current.round + 1
         print(f"The total scores for this group are {strategies.Strategy.acc_balance_all()}.")
         group_winner_val = strategies.Strategy.acc_balance_all().argmax()
-        print(f"The winner for this group is {game.Player(group_winner_val).name}")
+        group_winner = game.Game.fixture[g,group_winner_val]
+        print(f"The winner for this group is {game.Player(group_winner).name}")
         game.Current.group = game.Current.group + 1
 
     # 1D-array
