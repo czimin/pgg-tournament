@@ -10,7 +10,7 @@ Banking modes can be specified under the `Bank` class in `game.py` in the `publi
 ## Strategies
 Update 23/08/24: `RANDOM` has been added as a playable strategy but I have commented it out in the default list of players as it causes extreme variations in tournament results, ceteris paribus.
 
-Update 22/08/24: Previously, TFT ended up with negative accounts because other players' average contribution from the previous round was greater than what it currently had. This has now been fixed. TFT and its cousins now give everything they have, should they have less than what they feel they *should* contribute.
+Update 22/08/24: Previously, `TFT` ended up with negative accounts because other players' average contribution from the previous round was greater than what it currently had. This has now been fixed. `TFT` and its cousins now give everything they have, should they have less than what they feel they *should* contribute.
 
 Strategies are stored in `strategies.py` in the `publicgoodsgame` module. More strategies can and will be added.
 Strategies that calculate their next move based on other players' histories have an optional communist mode. When `iscommunist` is set to true, such a strategy will judge other players by comparing what they contributed against what they can afford, rather than against what it itself had paid out. Additionally, if `game.mode` in `game.py` is set to 1, the 'average opponent' will be interpreted as the median player, rather than the mean player. 
