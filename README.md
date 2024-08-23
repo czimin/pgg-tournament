@@ -4,13 +4,11 @@ An Axelrod-inspired tournament among different strategies playing the public goo
 ## Banking modes
 Banking modes can be specified under the `Bank` class in `game.py` in the `publicgoodsgame` module. Currently, 3 modes are supported but more can be added.
 - `mode=0` multiplies the total contribution by `bankerx`, a chosen amount that must be less than the number of participants for this mode
-- `mode=1` takes after Bowles & Gintis (2011), p.22, where contributions are first multiplied by `bankerx`, usually less than 1, and then added to the original contributions
+- `mode=1` takes after Bowles & Gintis (2011), p.22, where contributions are first multiplied by `bankerx`, which must be less than 1, and then added to the original contributions
 - `mode=2` takes after Fehr & Gachter (2002), p.137, where each player receives a fraction of every dollar contributed to the common pool. This fraction is again specified by `bankerx` which must be less than 1
 
 ## Strategies
 Update 23/08/24: `RANDOM` has been added as a playable strategy but I have commented it out in the default list of players as it causes extreme variations in tournament results, ceteris paribus.
-
-Update 22/08/24: Previously, `TFT` ended up with negative accounts because other players' average contribution from the previous round was greater than what it currently had. This has now been fixed. `TFT` and its cousins now give everything they have, should they have less than what they feel they *should* contribute.
 
 Strategies are stored in `strategies.py` in the `publicgoodsgame` module. More strategies can and will be added.
 Strategies that calculate their next move based on other players' histories have an optional communist mode. When `iscommunist` is `True`, such a strategy will judge other players by comparing what they contributed against what they could afford, rather than against what it itself had contributed. Additionally, if `Game.mode` in `game.py` is set to 1, the 'average opponent' will be interpreted as the median player, rather than the mean player. 
