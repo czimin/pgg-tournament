@@ -23,10 +23,5 @@ At any point in the tournament, a 3D-array of payouts (rounds, groups, players) 
 ## Results
 Among the same players, tournament results seem to vary very widely depending on the number of rounds played and the group size. Changing the banking mode or the game mode seem to affect results less.
 
-## Known errors
-Update 23/08/24: Previously, using banking modes 1 or 2 would result in an `OverflowError: Python int too large to convert to C long` occuring at the compilation of final account balances. This has now been fixed by storing those values in a NumPy array of `dtype=np.int64` instead of a Python list.
-
-On a Windows machine, setting the number of rounds to 60 or above or setting `iscommunist` to `True` for all strategies will result in a `RuntimeWarning: invalid value encountered in cast`. But it appears that the tournament will still conclude successfully.
-
 ## Warning
 If something looks wrong, it probably is. This is my first go at Python.
