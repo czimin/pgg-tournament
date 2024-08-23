@@ -2,7 +2,6 @@ import numpy as np
 from enum import Enum
 from itertools import combinations
 
-# Begin original code
 # Comment out player to exclude. Player values do not need to be in order
 class Player(Enum):
     ALLC = 0
@@ -16,7 +15,7 @@ class Player(Enum):
 
 class Game:
     # This includes round 0 which is the non-playable endowment round
-    total_rounds = 30
+    total_rounds = 55
     group_size = 5
     endowment = 50
     # 0 = mean mode (no perfect information), 1 = median mode (perfect information)

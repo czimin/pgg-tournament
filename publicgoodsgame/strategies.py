@@ -5,7 +5,6 @@ from publicgoodsgame.game import Player
 from publicgoodsgame.game import Game
 from publicgoodsgame.game import Current
 
-# Begin original code
 class Strategy:
 
     @classmethod
