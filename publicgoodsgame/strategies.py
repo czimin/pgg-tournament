@@ -112,11 +112,11 @@ class Strategy:
     @classmethod
     def payouts_vs_accounts(cls):
         # cls.isnotbroke() ensures no division by 0
-        if cls.isingroup(cls) and cls.isnotbroke():
+        if cls.isingroup() and cls.isnotbroke():
             _payout_1d = Game.payouts[Current.round - 1, Current.group, :]
             _mask = np.ones_like(_payout_1d, dtype=bool)
             _mask[cls.playerpos()] = False
-            _payout_1d_noself = _prev_round_slice[_mask]
+            _payout_1d_noself = _payout_1d[_mask]
             return _payout_1d_noself / cls.acc_balance_prev() * 100
         else:
             raise TypeError("Strategy is not in group or player is broke")

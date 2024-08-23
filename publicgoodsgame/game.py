@@ -10,14 +10,15 @@ class Player(Enum):
     GRIM = 3
     PROTEGO = 4
     HYPOCRITE = 5
-    SAVIOUR = 6
-    # RANDOM = 7
+    INCENDIO = 6
+    SAVIOUR = 7
+    # RANDOM = 8
 
 class Game:
     # This includes round 0 which is the non-playable endowment round
-    total_rounds = 55
+    total_rounds = 10
     group_size = 5
-    endowment = 50
+    endowment = 100
     # 0 = mean mode (no perfect information), 1 = median mode (perfect information)
     mode = 0
     # 2D-array
