@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 from publicgoodsgame.game import Player
 from publicgoodsgame.game import Game
@@ -307,5 +309,16 @@ class INCENDIO(Strategy):
             else:
                 Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.standard / 100 * cls.acc_balance_player()
                 return
+        else:
+            pass
+
+class RANDOM(Strategy):
+    # Gives random float from own account
+    name = "RANDOM"
+    @classmethod
+    def gives(cls):
+        if cls.isnotbroke():
+            Game.payouts[Current.round, Current.group, cls.playerpos()] = random.uniform(0,cls.acc_balance_player())
+            return
         else:
             pass

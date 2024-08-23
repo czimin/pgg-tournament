@@ -3,7 +3,7 @@ from enum import Enum
 from itertools import combinations
 
 # Begin original code
-# Number strategies in order to avoid errors in main
+# Comment out player to exclude. Player values do not need to be in order
 class Player(Enum):
     ALLC = 0
     ALLD = 1
@@ -12,12 +12,13 @@ class Player(Enum):
     PROTEGO = 4
     HYPOCRITE = 5
     SAVIOUR = 6
+    # RANDOM = 7
 
 class Game:
     # This includes round 0 which is the non-playable endowment round
-    total_rounds = 10
+    total_rounds = 30
     group_size = 5
-    endowment = 20
+    endowment = 50
     # 0 = mean mode (no perfect information), 1 = median mode (perfect information)
     mode = 0
     # 2D-array
@@ -41,27 +42,21 @@ class Current:
     group = 0
 
 class Bank:
-    # modes: 0 = multiply by banker, 1 = bowles2011, 2 = fehr2002
+    # modes: 0 = multiply by bankerx, 1 = bowles2011, 2 = fehr2002
     mode = 0
     bankerx = 2
     
     # This gives sum after banking. Not yet divided and credited.
     @classmethod
     def pool(cls):
-        if cls.mode == 0:
-            if cls.bankerx < Game.group_size:
-                return Game.payouts[Current.round, Current.group, :].sum() * cls.bankerx
-            else:
-                raise TypeError("bankerx must be less than the group size for this mode")
-        elif cls.mode == 1:
+        if cls.mode == 0 and cls.bankerx < Game.group_size:
+            return Game.payouts[Current.round, Current.group, :].sum() * cls.bankerx
+        elif cls.mode == 1 and cls.bankerx < 1:
             return Game.payouts[Current.round, Current.group, :].sum() * (1 + cls.bankerx)
-        elif cls.mode == 2:
-            if cls.bankerx < 1:
-                return Game.payouts[Current.group, :, Current.round].sum() * cls.bankerx * Game.group_size
-            else:
-                raise TypeError("bankerx must be less than 1 for this mode")
+        elif cls.mode == 2 and cls.bankerx < 1:
+            return Game.payouts[Current.round, Current.group, :].sum() * cls.bankerx * Game.group_size
         else:
-            raise TypeError("Unrecognised operation")
+            raise TypeError("Mode 0: bankerx must be less than group size. Modes and 1 and 2: bankerx must be less than 1.")
 
     # This credits the correct amount into every pay-in account
     @classmethod
