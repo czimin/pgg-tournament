@@ -5,7 +5,7 @@ An Axelrod-inspired tournament among different strategies playing the public goo
 Banking modes can be specified under the `Bank` class in `game.py` in the `publicgoodsgame` module. Currently, 3 modes are supported but more can be added.
 - `mode=0` multiplies the total contribution by `bankerx`, a chosen amount that must be less than the number of participants for this mode
 - `mode=1` takes after Bowles & Gintis (2011), p.22, where contributions are first multiplied by `bankerx`, which must be less than 1, and then added to the original contributions
-- `mode=2` takes after Fehr & Gachter (2002), p.137, where each player receives a fraction of every dollar contributed to the common pool. This fraction is again specified by `bankerx` which must be less than 1
+- `mode=2` takes after Fehr & Gächter (2002), p.137, where each player receives a fraction of every dollar contributed to the common pool. This fraction is again specified by `bankerx` which must be less than 1
 
 ## Strategies
 Update 23/08/24: `RANDOM` has been added as a playable strategy but I have commented it out in the default list of players as it causes extreme variations in tournament results, ceteris paribus.
