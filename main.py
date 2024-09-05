@@ -1,12 +1,13 @@
 import numpy as np
+import os
 from publicgoodsgame import *
+from scipy.stats import rankdata
 if __name__ == "__main__":
-
     game.Game.reset_accounts()
 
     # For debugging purposes:
     # print(game.Game.fixture)
-    # print(game.Game.fixture.shape)
+    print(game.Game.fixture.shape)
     # This should be the same as the fixture
     # print(game.Game.payins.shape)
     
@@ -31,9 +32,6 @@ if __name__ == "__main__":
             print(f"Accounts for this round: {strategies.Strategy.acc_balance_all()}")
             game.Current.round = game.Current.round + 1
         print(f"The total scores for this group are {strategies.Strategy.acc_balance_all()}.")
-        group_winner_val = strategies.Strategy.acc_balance_all().argmax()
-        group_winner = game.Game.fixture[g,group_winner_val]
-        print(f"The winner for this group is {game.Player(group_winner).name}")
         game.Current.group = game.Current.group + 1
 
     # 1D-array
@@ -45,35 +43,56 @@ if __name__ == "__main__":
     # For debugging purposes (should be same as above):
     # print(game.Game.fixture)
 
-    # Players' indices
-    final_scores_players = []
-    # Players' scores
-    _final_scores_values = []
+    final_results = np.arange(len(game.Player)*2).reshape(2,len(game.Player)).astype(float)
+
+    column = 0
 
     for p in game.Player:
-        final_scores_players.append(p.value)
+        final_results[0,column] = p.value
+
         x,y = np.where(game.Game.fixture == p.value)
         mask = x,y
         # For debugging purposes (to check that coordinates given are correct):
         # print(mask)
         this_player_total = balance_along_rounds[mask].sum()
         print(f"Player {p.name}'s total score: {this_player_total}")
-        _final_scores_values.append(this_player_total)
+        final_results[1,column] = this_player_total
+        column = column+1
 
-    # Prevents overflow error
-    final_scores_values = np.array(_final_scores_values).astype(np.int64)
-    final_scores = np.arange(len(final_scores_players)*2).reshape(2,len(final_scores_players))
-    final_scores[0,:] = final_scores_players
-    final_scores[1,:] = final_scores_values
 
-    champion = game.Player(final_scores[0,final_scores[1,:].argmax()]).name
-    sucker = game.Player(final_scores[0,final_scores[1,:].argmin()]).name
-    print(f"The champion is {champion} and the sucker is {sucker}")
+tourn_ranking = np.arange(len(game.Player)*2).reshape(2,len(game.Player))
+tourn_ranking[0,:] = final_results[0,:]
+tourn_ranking[1,:] = rankdata(final_results[1,:],method='dense')
+print("Tournament ranking (lowest score = 1):")
+print(tourn_ranking)
 
-    stand = np.argsort(final_scores[1])[::-1]
-    ranked_stand_by_value = final_scores[0][stand]
-    ranked_stand_by_name = []
-    for v in ranked_stand_by_value:
-        ranked_stand_by_name.append(game.Player(v).name)
+# For output to LaTeX for term paper
+exp_players = 7
+tolatex_arr = np.zeros(exp_players).astype(int)
+for exp_p in range(exp_players):
+    if exp_p in final_results[0,:]:
+        p_score_column = np.where(final_results[0,:] == exp_p)[0][0]
+        tolatex_arr[exp_p] = tourn_ranking[1,p_score_column]
 
-    print(f"Ranking: {ranked_stand_by_name}")
+tolatex_list = tolatex_arr.tolist()
+
+if 0 in tolatex_arr:
+    notplayed_index = np.where(tolatex_arr == 0)[0][0]
+    tolatex_list[notplayed_index] = "--"
+
+with open('output_s2.txt', 'rb') as f:
+    try:  # catch OSError in case of a one line file
+        f.seek(-2, os.SEEK_END)
+        while f.read(1) != b'\n':
+            f.seek(-2, os.SEEK_CUR)
+    except OSError:
+        f.seek(0)
+    last_line = f.readline().decode()
+
+with open('output_s2.txt','a') as f:
+    if "Rounds" in last_line or ",8," in last_line or ",16," in last_line or ",32," in last_line or ",40," in last_line:
+            f.write(f"{game.Game.total_rounds},{game.tourn_no},")
+    else:
+        f.write(f",{game.tourn_no},")
+
+    f.write(",".join(map(str, tolatex_list)) + "\n")
