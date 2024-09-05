@@ -70,9 +70,25 @@ class Strategy:
             if Current.round == 1:
                 return np.full(Game.group_size-1, Game.endowment)
             else:
-                # Current.round-1 because at round r, players' spending in round-1 is based on their balance at the round-2
+                # Current.round-1 because at round r, players' spending in round-1 is based on their balance at round-2
                 _payin_1d = Game.payins[:(Current.round - 1), Current.group]
                 _payout_2d = Game.payouts[:(Current.round - 1), Current.group, :]
+                _all_accounts = (np.vstack(_payin_1d) - _payout_2d).sum(axis=0)
+                _mask = np.ones_like(_all_accounts, dtype=bool)
+                _mask[cls.playerpos()] = False
+                return _all_accounts[_mask]
+        else:
+            raise TypeError("Strategy is not in group")
+
+    # Currently unused
+    @classmethod
+    def acc_balance_current(cls):
+        if cls.isingroup():
+            if Current.round == 1:
+                return np.full(Game.group_size - 1, Game.endowment)
+            else:
+                _payin_1d = Game.payins[:(Current.round), Current.group]
+                _payout_2d = Game.payouts[:(Current.round), Current.group, :]
                 _all_accounts = (np.vstack(_payin_1d) - _payout_2d).sum(axis=0)
                 _mask = np.ones_like(_all_accounts, dtype=bool)
                 _mask[cls.playerpos()] = False
@@ -90,10 +106,21 @@ class Strategy:
             else:
                 raise TypeError("Unrecognised game mode. Check class variables of Game.")
 
+    # Currently unused
+    @classmethod
+    def avg_acc_balance_current(cls):
+        if cls.isingroup():
+            if Game.mode == 0:
+                return np.mean(cls.acc_balance_current())
+            elif Game.mode == 1:
+                return np.median(cls.acc_balance_current())
+            else:
+                raise TypeError("Unrecognised game mode. Check class variables of Game.")
+
     # Returns single-valued sum of payouts, excluding own player
     @classmethod
     def sum_payouts_prev(cls):
-        _prev_round_slice = Game.payouts[Current.round - 1, Current.group, :]
+        _prev_round_slice = Game.payouts[Current.round-1, Current.group, :]
         _mask = np.ones_like(_prev_round_slice, dtype=bool)
         _mask[cls.playerpos()] = False
         _slice_excluding_player = _prev_round_slice[_mask]
@@ -241,11 +268,10 @@ class HYPOCRITE(Strategy):
     # Gives only when others meet a certain standard that it itself will not meet. This only makes sense if cls.own_coop is high enough to meet the standards of other strategies
 
     name = "HYPOCRITE"
-    iscommunist = False
     first_coop = 80
-    sub_coop = 80
+    standard = 90
     # How much more it expects of others than of itself
-    buffer = 5
+    buffer = 10
 
     @classmethod
     def gives(cls):
@@ -254,11 +280,8 @@ class HYPOCRITE(Strategy):
                 # Cooperates first
                 Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.first_coop / 100 * Game.endowment
                 return
-            elif cls.iscommunist and cls.avg_payouts_prev() >= (cls.sub_coop + cls.buffer) / 100 * cls.avg_acc_balance_prev():
-                Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.sub_coop / 100 * cls.acc_balance_player()
-                return
-            elif not cls.iscommunist and cls.avg_payouts_prev() >= (cls.sub_coop + cls.buffer) / 100 * Game.payouts[Current.round -1, Current.group, cls.playerpos()]:
-                Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.sub_coop / 100 * cls.acc_balance_player()
+            elif cls.avg_payouts_prev() >= cls.standard / 100 * cls.avg_acc_balance_prev():
+                Game.payouts[Current.round, Current.group, cls.playerpos()] = (cls.standard-cls.buffer) / 100 * cls.acc_balance_player()
                 return
             else:
                 Game.payouts[Current.round, Current.group, cls.playerpos()] = 0
@@ -289,7 +312,7 @@ class SAVIOUR(Strategy):
 class INCENDIO(Strategy):
     
     # Targets one defector but punishes all. INCENDIO is the spell that sets fire to things. INCENDIO contributes according to its own standard
-    # INCENDIO requires perfect information
+    # In the real world, INCENDIO at standard=100 is equivalent to checking for empty hands
     
     name = "INCENDIO"
     standard = 100
@@ -306,7 +329,7 @@ class INCENDIO(Strategy):
                 Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.standard / 100 * cls.acc_balance_player()
                 return
             else:
-                Game.payouts[Current.round, Current.group, cls.playerpos()] = cls.standard / 100 * cls.acc_balance_player()
+                Game.payouts[Current.round, Current.group, cls.playerpos()] = 0
                 return
         else:
             pass

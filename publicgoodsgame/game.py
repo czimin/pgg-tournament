@@ -2,16 +2,17 @@ import numpy as np
 from enum import Enum
 from itertools import combinations
 
+tourn_no = 48
 # Comment out player to exclude. Player values do not need to be in order
 class Player(Enum):
     ALLC = 0
     ALLD = 1
     TFT = 2
-    GRIM = 3
-    PROTEGO = 4
+    PROTEGO = 3
+    GRIM = 4
     HYPOCRITE = 5
-    INCENDIO = 6
-    SAVIOUR = 7
+    SAVIOUR = 6
+    INCENDIO = 7
     # RANDOM = 8
 
 class Game:
