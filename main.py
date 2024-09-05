@@ -67,32 +67,32 @@ print("Tournament ranking (lowest score = 1):")
 print(tourn_ranking)
 
 # For output to LaTeX for term paper
-exp_players = 7
-tolatex_arr = np.zeros(exp_players).astype(int)
-for exp_p in range(exp_players):
-    if exp_p in final_results[0,:]:
-        p_score_column = np.where(final_results[0,:] == exp_p)[0][0]
-        tolatex_arr[exp_p] = tourn_ranking[1,p_score_column]
+# exp_players = 7
+# tolatex_arr = np.zeros(exp_players).astype(int)
+# for exp_p in range(exp_players):
+#     if exp_p in final_results[0,:]:
+#         p_score_column = np.where(final_results[0,:] == exp_p)[0][0]
+#         tolatex_arr[exp_p] = tourn_ranking[1,p_score_column]
 
-tolatex_list = tolatex_arr.tolist()
+# tolatex_list = tolatex_arr.tolist()
 
-if 0 in tolatex_arr:
-    notplayed_index = np.where(tolatex_arr == 0)[0][0]
-    tolatex_list[notplayed_index] = "--"
+# if 0 in tolatex_arr:
+#     notplayed_index = np.where(tolatex_arr == 0)[0][0]
+#     tolatex_list[notplayed_index] = "--"
 
-with open('output_s2.txt', 'rb') as f:
-    try:  # catch OSError in case of a one line file
-        f.seek(-2, os.SEEK_END)
-        while f.read(1) != b'\n':
-            f.seek(-2, os.SEEK_CUR)
-    except OSError:
-        f.seek(0)
-    last_line = f.readline().decode()
+# with open('output_s2.txt', 'rb') as f:
+#     try:  # catch OSError in case of a one line file
+#         f.seek(-2, os.SEEK_END)
+#         while f.read(1) != b'\n':
+#             f.seek(-2, os.SEEK_CUR)
+#     except OSError:
+#         f.seek(0)
+#     last_line = f.readline().decode()
 
-with open('output_s2.txt','a') as f:
-    if "Rounds" in last_line or ",8," in last_line or ",16," in last_line or ",32," in last_line or ",40," in last_line:
-            f.write(f"{game.Game.total_rounds},{game.tourn_no},")
-    else:
-        f.write(f",{game.tourn_no},")
+# with open('output_s2.txt','a') as f:
+#     if "Rounds" in last_line or ",8," in last_line or ",16," in last_line or ",32," in last_line or ",40," in last_line:
+#             f.write(f"{game.Game.total_rounds},{game.tourn_no},")
+#     else:
+#         f.write(f",{game.tourn_no},")
 
-    f.write(",".join(map(str, tolatex_list)) + "\n")
+#     f.write(",".join(map(str, tolatex_list)) + "\n")
