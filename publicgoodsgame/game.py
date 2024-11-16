@@ -2,23 +2,6 @@ import numpy as np
 from enum import Enum
 from itertools import combinations
 
-
-# To Do
-# Make it possible for different players to play the same strategy
-
-
-# tourn_no = 48
-# Comment out player to exclude. Player values do not need to be in order
-# Player.name = strategy, Player.value = player
-# Players can change their strategy
-# Model real human experiment regression
-# In big groups with more cooperators with fewer hypocrites, the hypocrites can get away more easily
-# Because the average becomes closer to the maximum average
-# What is the percentage of hypocrites that can survive
-# Frequency dependent selection
-# Punishing according to different standards
-# b < p.c If c is the death penalty, then it would tend to infinity. So however small the p, it would still be not worth
-
 class Player(Enum):
     ALLC = 0
     ALLD = 1
@@ -36,8 +19,8 @@ class Game:
     total_rounds = 30
     group_size = 5
     endowment = 100
-    # 0 = mean mode (no perfect information), 1 = median mode (perfect information)
-    mode = 0
+    # 0 = mean stats_mode (no perfect information), 1 = median stats_mode (perfect information)
+    stats_mode = 0
     # 2D-array (groups, group members)
     fixture = np.array(list(combinations([Player.value for Player in Player], group_size)))
 
@@ -62,7 +45,6 @@ class Current:
 
 class Bank:
     bankerx = 2
-
     # This gives sum after banking. Not yet divided and credited.
     @classmethod
     def pool(cls):

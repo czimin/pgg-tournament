@@ -99,22 +99,13 @@ class Strategy:
     @classmethod
     def avg_acc_balance_prev(cls):
         if cls.isingroup():
-            if Game.mode == 0:
+            if Game.stats_mode == 0:
                 return np.mean(cls.acc_balance_prev())
-            elif Game.mode == 1:
+            elif Game.stats_mode == 1:
                 return np.median(cls.acc_balance_prev())
             else:
-                raise TypeError("Unrecognised game mode. Check class variables of Game.")
+                raise TypeError("Unrecognised game stats_mode. Check class variables of Game.")
 
-    # @classmethod
-    # def avg_acc_balance_current(cls):
-    #     if cls.isingroup():
-    #         if Game.mode == 0:
-    #             return np.mean(cls.acc_balance_current())
-    #         elif Game.mode == 1:
-    #             return np.median(cls.acc_balance_current())
-    #         else:
-    #             raise TypeError("Unrecognised game mode. Check class variables of Game.")
 
     # Returns single-valued sum of contributions, excluding own player
     @classmethod
@@ -126,13 +117,13 @@ class Strategy:
         return _slice_excluding_player.sum()
 
     @classmethod
-    def avg_payouts_prev(cls):
-        if Game.mode == 0:
+    def avg_contributions_prev(cls):
+        if Game.stats_mode == 0:
             return np.mean(cls.sum_payouts_prev())
-        elif Game.mode == 1:
+        elif Game.stats_mode == 1:
             return np.median(cls.sum_payouts_prev())
         else:
-            raise TypeError("Unrecognised game mode. Check class variables of Game.")
+            raise TypeError("Unrecognised game stats_mode. Check class variables of Game.")
 
     # Returns array showing percentage of means given away
     @classmethod
@@ -181,7 +172,6 @@ class TFT(Strategy):
 
     name = "TFT"
     # As a communist, TFT will take into account the means of other players.
-    iscommunist = False
     # What percentage of endowment to give in first round. Default is 100.
     first_coop = 100
 
@@ -193,15 +183,9 @@ class TFT(Strategy):
                 Game.contributions[
                     Current.round, Current.group, cls.playerpos()] = cls.first_coop / 100 * Game.endowment
                 return
-            elif cls.iscommunist:
-                Game.contributions[
-                    Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
-                return
-            elif cls.avg_payouts_prev() > cls.acc_balance_player():
-                Game.contributions[Current.round, Current.group, cls.playerpos()] = cls.acc_balance_player()
-                return
             else:
-                Game.contributions[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev()
+                Game.contributions[
+                    Current.round, Current.group, cls.playerpos()] = cls.avg_contributions_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
                 return
         else:
             pass
@@ -212,7 +196,6 @@ class PROTEGO(Strategy):
     # If communist, standard is measured according to other players' means. Else measured against own player's contribution
 
     name = "PROTEGO"
-    iscommunist = False
     standard = 80
     first_coop = 100
 
@@ -223,18 +206,10 @@ class PROTEGO(Strategy):
                 Game.contributions[
                     Current.round, Current.group, cls.playerpos()] = cls.first_coop / 100 * Game.endowment
                 return
-            elif cls.iscommunist and cls.avg_payouts_prev() >= cls.standard / 100 * cls.avg_acc_balance_prev():
+            elif cls.avg_contributions_prev() >= cls.standard / 100 * cls.avg_acc_balance_prev():
                 Game.contributions[
-                    Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
+                    Current.round, Current.group, cls.playerpos()] = cls.avg_contributions_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
                 return
-            elif not cls.iscommunist and cls.avg_acc_balance_prev() >= cls.standard / 100 * Game.contributions[
-                Current.round - 1, Current.group, cls.playerpos()]:
-                if cls.avg_payouts_prev() > cls.acc_balance_player():
-                    Game.contributions[Current.round, Current.group, cls.playerpos()] = cls.acc_balance_player()
-                    return
-                else:
-                    Game.contributions[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev()
-                    return
             else:
                 Game.contributions[Current.round, Current.group, cls.playerpos()] = 0
                 return
@@ -244,7 +219,6 @@ class GRIM(Strategy):
     # GRIM is like PROTEGO but defects forever following a first defection
 
     name = "GRIM"
-    iscommunist = False
     standard = 80
     first_coop = 100
 
@@ -255,18 +229,9 @@ class GRIM(Strategy):
                 Game.contributions[
                     Current.round, Current.group, cls.playerpos()] = cls.first_coop / 100 * Game.endowment
                 return
-            elif cls.iscommunist and cls.avg_payouts_prev() >= cls.standard / 100 * cls.avg_acc_balance_prev() and not cls.defectedbefore():
-                Game.contributions[
-                    Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
+            elif cls.avg_contributions_prev() >= cls.standard / 100 * cls.avg_acc_balance_prev() and not cls.defectedbefore():
+                Game.contributions[Current.round, Current.group, cls.playerpos()] = cls.avg_contributions_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
                 return
-            elif not cls.iscommunist and cls.avg_acc_balance_prev() >= cls.standard / 100 * Game.contributions[
-                Current.round - 1, Current.group, cls.playerpos()] and not cls.defectedbefore():
-                if cls.avg_payouts_prev() > cls.acc_balance_player():
-                    Game.contributions[Current.round, Current.group, cls.playerpos()] = cls.acc_balance_player()
-                    return
-                else:
-                    Game.contributions[Current.round, Current.group, cls.playerpos()] = cls.avg_payouts_prev()
-                    return
             else:
                 Game.contributions[Current.round, Current.group, cls.playerpos()] = 0
                 return
@@ -289,7 +254,7 @@ class HYPOCRITE(Strategy):
                 Game.contributions[
                     Current.round, Current.group, cls.playerpos()] = cls.first_coop / 100 * Game.endowment
                 return
-            elif cls.avg_payouts_prev() >= cls.standard / 100 * cls.avg_acc_balance_prev():
+            elif cls.avg_contributions_prev() >= cls.standard / 100 * cls.avg_acc_balance_prev():
                 Game.contributions[Current.round, Current.group, cls.playerpos()] = (
                                                                                                 cls.standard - cls.buffer) / 100 * cls.acc_balance_player()
                 return
@@ -322,8 +287,6 @@ class SAVIOUR(Strategy):
 
 
 class INCENDIO(Strategy):
-    # Note: INCENDIO can only realistically play in communist mode
-
     # Targets one defector but punishes all. INCENDIO is the spell that sets fire to things. INCENDIO contributes according to its own standard
     # In the real world, INCENDIO at standard=100 is equivalent to checking for empty hands
 
