@@ -9,6 +9,5 @@ Contributions and winnings are stored in NumPy arrays and can be viewed at any t
 
 ## To-Do
 - Make it possible for different players to play the same strategy
-- Comment out player to exclude. Player values do not need to be in order
 - Players can change their strategy
-- In big groups with more cooperators with fewer `HYPOCRITE`s, the `HYPOCRITE`s can get away more easily, since the average becomes closer to the maximum average. Find the highest ratio of `HYPOCRITE`s over cooperators before `HYPOCRITE`s die. (This is a form of frequency dependent selection.)
+- In big groups with more cooperators with fewer `HYPOCRITEs`, the `HYPOCRITEs` can get away more easily, since the average becomes closer to the maximum average. Find the highest ratio of `HYPOCRITEs` over cooperators before `HYPOCRITE`s die. (This is a form of frequency dependent selection.)
