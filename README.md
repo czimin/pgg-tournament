@@ -8,6 +8,6 @@ Strategies are stored in `strategies.py` in the `publicgoodsgame` module. Most s
 Contributions and winnings are stored in NumPy arrays and can be viewed at any time. `main.py` generates a logarithmic graph of each player's balance over the course of the tournament.
 
 ## To-Do
-- Make it possible for different players to play the same strategy
+- Different players can play the same strategy
 - Players can change their strategy
-- In big groups with more cooperators with fewer `HYPOCRITEs`, the `HYPOCRITEs` can get away more easily, since the average becomes closer to the maximum average. Find the highest ratio of `HYPOCRITEs` over cooperators before `HYPOCRITE`s die. (This is a form of frequency dependent selection.)
+- In big groups with more cooperators with fewer `HYPOCRITEs`, the `HYPOCRITEs` can get away more easily, since the average becomes closer to the maximum average. Find the highest ratio of `HYPOCRITEs` over cooperators before `HYPOCRITEs` die. (This is a form of frequency dependent selection.)
