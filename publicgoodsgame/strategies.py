@@ -144,13 +144,12 @@ class ALLC(Strategy):
     # percentage = percentage of own means to give away
 
     name = "ALLC"
-    percentage = 100
 
     @classmethod
     def gives(cls):
         if cls.isnotbroke():
             Game.contributions[
-                Current.round, Current.group, cls.playerpos()] = cls.percentage / 100 * cls.acc_balance_player()
+                Current.round, Current.group, cls.playerpos()] = cls.acc_balance_player()
             return
         else:
             pass
@@ -173,7 +172,7 @@ class TFT(Strategy):
     name = "TFT"
     # As a communist, TFT will take into account the means of other players.
     # What percentage of endowment to give in first round. Default is 100.
-    first_coop = 100
+    first_coop = 1
 
     @classmethod
     def gives(cls):
@@ -181,7 +180,7 @@ class TFT(Strategy):
             if Current.round == 1:
                 # Cooperates first
                 Game.contributions[
-                    Current.round, Current.group, cls.playerpos()] = cls.first_coop / 100 * Game.endowment
+                    Current.round, Current.group, cls.playerpos()] = cls.first_coop * Game.endowment
                 return
             else:
                 Game.contributions[
@@ -196,17 +195,17 @@ class PROTEGO(Strategy):
     # If communist, standard is measured according to other players' means. Else measured against own player's contribution
 
     name = "PROTEGO"
-    standard = 80
-    first_coop = 100
+    standard = 0.8
+    first_coop = 1
 
     @classmethod
     def gives(cls):
         if cls.isnotbroke():
             if Current.round == 1:
                 Game.contributions[
-                    Current.round, Current.group, cls.playerpos()] = cls.first_coop / 100 * Game.endowment
+                    Current.round, Current.group, cls.playerpos()] = cls.first_coop * Game.endowment
                 return
-            elif cls.avg_contributions_prev() >= cls.standard / 100 * cls.avg_acc_balance_prev():
+            elif cls.avg_contributions_prev() >= cls.standard * cls.avg_acc_balance_prev():
                 Game.contributions[
                     Current.round, Current.group, cls.playerpos()] = cls.avg_contributions_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
                 return
@@ -219,17 +218,17 @@ class GRIM(Strategy):
     # GRIM is like PROTEGO but defects forever following a first defection
 
     name = "GRIM"
-    standard = 80
-    first_coop = 100
+    standard = 0.8
+    first_coop = 1
 
     @classmethod
     def gives(cls):
         if cls.isnotbroke():
             if Current.round == 1:
                 Game.contributions[
-                    Current.round, Current.group, cls.playerpos()] = cls.first_coop / 100 * Game.endowment
+                    Current.round, Current.group, cls.playerpos()] = cls.first_coop * Game.endowment
                 return
-            elif cls.avg_contributions_prev() >= cls.standard / 100 * cls.avg_acc_balance_prev() and not cls.defectedbefore():
+            elif cls.avg_contributions_prev() >= cls.standard * cls.avg_acc_balance_prev() and not cls.defectedbefore():
                 Game.contributions[Current.round, Current.group, cls.playerpos()] = cls.avg_contributions_prev() / cls.avg_acc_balance_prev() * cls.acc_balance_player()
                 return
             else:
@@ -241,10 +240,10 @@ class HYPOCRITE(Strategy):
     # Gives only when others meet a certain standard that it itself will not meet. This only makes sense if cls.own_coop is high enough to meet the standards of other strategies
 
     name = "HYPOCRITE"
-    first_coop = 80
-    standard = 90
+    first_coop = 0.8
+    standard = 0.9
     # How much more it expects of others than of itself
-    buffer = 10
+    buffer = 0.1
 
     @classmethod
     def gives(cls):
@@ -252,11 +251,10 @@ class HYPOCRITE(Strategy):
             if Current.round == 1:
                 # Cooperates first
                 Game.contributions[
-                    Current.round, Current.group, cls.playerpos()] = cls.first_coop / 100 * Game.endowment
+                    Current.round, Current.group, cls.playerpos()] = cls.first_coop * Game.endowment
                 return
-            elif cls.avg_contributions_prev() >= cls.standard / 100 * cls.avg_acc_balance_prev():
-                Game.contributions[Current.round, Current.group, cls.playerpos()] = (
-                                                                                                cls.standard - cls.buffer) / 100 * cls.acc_balance_player()
+            elif cls.avg_contributions_prev() >= cls.standard * cls.avg_acc_balance_prev():
+                Game.contributions[Current.round, Current.group, cls.playerpos()] = (cls.standard - cls.buffer) * cls.acc_balance_player()
                 return
             else:
                 Game.contributions[Current.round, Current.group, cls.playerpos()] = 0
@@ -270,7 +268,7 @@ class SAVIOUR(Strategy):
 
     name = "SAVIOUR"
     # This has to be less than 100 to make sense
-    own_coop = 50
+    own_coop = 0.5
 
     @classmethod
     def gives(cls):
@@ -280,7 +278,7 @@ class SAVIOUR(Strategy):
                 return
             else:
                 Game.contributions[
-                    Current.round, Current.group, cls.playerpos()] = cls.own_coop / 100 * cls.acc_balance_player()
+                    Current.round, Current.group, cls.playerpos()] = cls.own_coop * cls.acc_balance_player()
                 return
         else:
             pass
@@ -291,8 +289,8 @@ class INCENDIO(Strategy):
     # In the real world, INCENDIO at standard=100 is equivalent to checking for empty hands
 
     name = "INCENDIO"
-    standard = 100
-    first_coop = 100
+    standard = 1
+    first_coop = 1
 
     @classmethod
     def gives(cls):
@@ -300,11 +298,11 @@ class INCENDIO(Strategy):
             if Current.round == 1:
                 # Cooperates first
                 Game.contributions[
-                    Current.round, Current.group, cls.playerpos()] = cls.first_coop / 100 * Game.endowment
+                    Current.round, Current.group, cls.playerpos()] = cls.first_coop * Game.endowment
                 return
             elif np.size(cls.payouts_vs_accounts()[cls.payouts_vs_accounts() < cls.standard]) == 0:
                 Game.contributions[
-                    Current.round, Current.group, cls.playerpos()] = cls.standard / 100 * cls.acc_balance_player()
+                    Current.round, Current.group, cls.playerpos()] = cls.standard * cls.acc_balance_player()
                 return
             else:
                 Game.contributions[Current.round, Current.group, cls.playerpos()] = 0
